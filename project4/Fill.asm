@@ -13,33 +13,39 @@
 
 	// Put your code here.
 	(function)
-	@Key
+	@KBD
 	D=M
 	@Draw
-	D			;JNE
-	@1
-	D=A
+	D			;JEQ
+	D=-1
 	(Draw)
 	@R1
 	M=D
-	@8192
+	@8191
 	D=A
 	@R0
 	M=D
 	(loop)
+	
+	@SCREEN
+	D=A+D
+	@R2
+	M=D
+	@R1
+	D=M
+	@R2
+	A=M
+	M=D
 	@R0
+	M=M-1
 	D=M
 	@END
 	D			;JEQ
-	D=SCREEN+D
-	A=D
-	@R2=1
-
-	@R0
-	M=M-1
 	@loop
 	0			;JMP
 	
 	(END)
+	@SCREEN
+	M=D
 	@function
 	0			;JMP
