@@ -23,29 +23,27 @@
 	M=D
 	@8191
 	D=A
+	@SCREEN
+	D=A+D
 	@R0
 	M=D
 	(loop)
-	
-	@SCREEN
-	D=A+D
-	@R2
-	M=D
 	@R1
 	D=M
-	@R2
+	@R0
 	A=M
 	M=D
 	@R0
-	M=M-1
 	D=M
+	@SCREEN
+	D=D-A
 	@END
 	D			;JEQ
+	@R0
+	M=M-1			
 	@loop
 	0			;JMP
 	
 	(END)
-	@SCREEN
-	M=D
 	@function
 	0			;JMP
