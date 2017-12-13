@@ -174,7 +174,12 @@ public class CodeWriter {
 	"M=D\n";
 
     String initProc=
+	"@256\n"+
+	"D=A\n"+
 	"@SP\n"+
+	"M=D\n"+
+	"@Sys.init\n"+
+	"0;JMP\n"
 	;
 
     String  funCallProc=
@@ -248,7 +253,25 @@ public class CodeWriter {
 	"@FRAME\n"+
 	"M=D\n"+
 	"@SP\n"+
-	"AM=M-1\n"+
+	"DM=M-1\n"+
+	"@ARG\n"+
+	"M=D\n"+
+	"@SP\n"+
+	"M=D-1\n"+
+	"@FRAME\n"+
+	"D=M\n"+
+	"@THAT\n"+
+	"MD=D-1\n"+
+	"@THIS\n"+
+	"MD=D-1\n"+
+	"@ARG\n"+
+	"MD=D-1\n"+
+	"@LCL\n"+
+	"MD=D-1\n"+
+	"@RET\n"+
+	"M=D-1\n"+
+	"A=M\n"+
+	"0;JMP\n"
 	;
 	    
     String lableProc=
@@ -363,6 +386,7 @@ public class CodeWriter {
 	return false;
     }
     public boolean writeInit(){
+	return writeToBinary(this.output,this.initProc);
     }
     public boolean writeLable(String label){
 	return writeToBinary(this.output,this.labelProc.replace(":label",label));
@@ -378,6 +402,7 @@ public class CodeWriter {
 	return writeToBinary(this.output,this.funCallProc.replaceAll(":fun",func).replaceAll(":id",this.logic_id).replaceAll(":args",noargs);
     }
     public boolean writeReturn(){
+	    return writeToBinary(this.output,this.funRetProc);
     }
     public boolean writeFunction(String func,int nolocal){
 	return writeToBinary(this.output,this.funDecProc.replaceAll(":fun",func).replaceAll(":args",nolocal));
