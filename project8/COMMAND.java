@@ -1,0 +1,11 @@
+public enum COMMAND {
+	ARITH,
+	PUSH,
+	POP,
+	LABLE,
+	GOTO,
+	IF,
+	FUNCTION,
+	RETURN,
+	CALL
+}
