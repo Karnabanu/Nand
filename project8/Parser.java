@@ -5,6 +5,7 @@ import java.io.IOException;
 public class Parser {
     private BufferedReader source;
     private String line;
+    private String comment;
     private String[] words;
     private COMMAND cType;
     private String arg1;
@@ -31,8 +32,8 @@ public class Parser {
     }
 	
     public void advance(){
-	words=line.split(" ");
-		
+	words=line.split("\\s+");
+	
 	if(
 	   "add".equalsIgnoreCase(words[0])||
 	   "sub".equalsIgnoreCase(words[0])||
@@ -46,6 +47,7 @@ public class Parser {
 	   ){
 	    this.arg1=words[0].toLowerCase();
 	    this.cType=COMMAND.ARITH;
+	    this.comment="\n//"+words[0]+"\n";
 	}
 	else if(
 		"push".equalsIgnoreCase(words[0])
@@ -53,6 +55,7 @@ public class Parser {
 	    this.arg1=words[1].toLowerCase();
 	    this.arg2=Integer.parseInt(words[2]);
 	    this.cType=COMMAND.PUSH;
+	    this.comment="\n//"+words[0]+" "+words[1]+" "+words[2]+"\n";
 	}
 	else if(
 		"pop".equalsIgnoreCase(words[0])
@@ -60,24 +63,28 @@ public class Parser {
 	    this.arg1=words[1].toLowerCase();
 	    this.arg2=Integer.parseInt(words[2]);
 	    this.cType=COMMAND.POP;
+	    this.comment="\n//"+words[0]+" "+words[1]+" "+words[2]+"\n";
 	}
 	else if(
 		"label".equalsIgnoreCase(words[0])
 		){
 	    this.arg1=words[1];
 	    this.cType=COMMAND.LABLE;
+	    this.comment="\n//"+words[0]+" "+words[1]+"\n";
 	}
 	else if(
 		"goto".equalsIgnoreCase(words[0])
 		){
 	    this.arg1=words[1];
 	    this.cType=COMMAND.GOTO;
+	    this.comment="\n//"+words[0]+" "+words[1]+"\n";
 	}
 	else if(
 		"if-goto".equalsIgnoreCase(words[0])
 		){
 	    this.arg1=words[1];
 	    this.cType=COMMAND.IF;
+	    this.comment="\n//"+words[0]+" "+words[1]+"\n";
 	}
 	else if(
 		"function".equalsIgnoreCase(words[0])
@@ -85,7 +92,7 @@ public class Parser {
 	    this.arg1=words[1];
 	    this.arg2=Integer.parseInt(words[2]);
 	    this.cType=COMMAND.FUNCTION;
-		
+	    this.comment="\n//"+words[0]+" "+words[1]+" "+words[2]+"\n";
 	}
 	else if(
 		"call".equalsIgnoreCase(words[0])
@@ -93,12 +100,14 @@ public class Parser {
 	    this.arg1=words[1];
 	    this.arg2=Integer.parseInt(words[2]);
 	    this.cType=COMMAND.CALL;
+	    this.comment="\n//"+words[0]+" "+words[1]+" "+words[2]+"\n";
 		
 	}
 	else if(
 		"return".equalsIgnoreCase(words[0])
 		){
 	    this.cType=COMMAND.RETURN;
+	    this.comment="\n//"+words[0]+"\n";
 	}
 	
 		
@@ -114,4 +123,8 @@ public class Parser {
     public int arg2(){
 	return this.arg2;
     }
+    public String getComment(){
+    	return this.comment;
+    }
 }
+
