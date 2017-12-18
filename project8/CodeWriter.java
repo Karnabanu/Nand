@@ -203,11 +203,6 @@ public class CodeWriter {
 	"@SP\n"+
 	"AM=M+1\n"+
 	"M=D\n"+
-	"@ARG\n"+
-	"D=M\n"+
-	"@SP\n"+
-	"AM=M+1\n"+
-	"M=D\n"+
 	"@THAT\n"+
 	"D=M\n"+
 	"@SP\n"+
@@ -227,13 +222,13 @@ public class CodeWriter {
 	"D=M\n"+
 	"@LCL\n"+
 	"M=D\n"+
-	"@Declare_:fun\n"+
+	"@:fun\n"+
 	"0;JMP\n"+
 	"(Return_:fun_:id)\n"
 	;
 
     String funDecProc=
-	"(Declare_:fun)\n"+
+	"(:fun)\n"+
 	"@:args\n"+
 	"D=A\n"+
 	"(Lable_:fun_init)\n"+
@@ -245,7 +240,7 @@ public class CodeWriter {
 	"@SP\n"+
 	"M=M+1\n"+
 	"D=D-1\n"+
-	"(Lable_:fun_init_end)\n"+
+	"(Lable_:fun_init_end)\n"
 	;
     String funRetProc=
 	"@LCL\n"+
@@ -253,7 +248,7 @@ public class CodeWriter {
 	"@FRAME\n"+
 	"M=D\n"+
 	"@SP\n"+
-	"DM=M-1\n"+
+	"MD=M-1\n"+
 	"@ARG\n"+
 	"M=D\n"+
 	"@SP\n"+
@@ -278,7 +273,7 @@ public class CodeWriter {
 	"(:lable)\n";
 
     String gotoProc=
-	"@:lable\n"+
+	"@:label\n"+
 	"0;JMP\n";
 
     String ifGotoProc=
@@ -286,7 +281,7 @@ public class CodeWriter {
 	"AM=M-1\n"+
 	"D=M\n"+
 	"@:label\n"+
-	"D;JEQ\n";
+	"D;JNE\n";
 	
     public CodeWriter(FileWriter output) {
 	super();
@@ -350,7 +345,8 @@ public class CodeWriter {
 		return false;
 	}
 	else if("static".equalsIgnoreCase(segment)){
-	    segment="16";
+	    if(index+16>=256)
+	    	return false;
 	} 
 	else if("pointer".equalsIgnoreCase(segment)){
 	    if((index<0)&&(index>1)){
@@ -370,8 +366,10 @@ public class CodeWriter {
 		return writeToBinary(this.output,this.directPushProc.replace(":segment",""+(5+index)));
 	    else if("pointer".equalsIgnoreCase(segment))
 		return writeToBinary(this.output,this.directPushProc.replace(":segment",""+(3+index)));
+	    else if("static".equalsIgnoreCase(segment))
+			return writeToBinary(this.output,this.directPushProc.replace(":segment",this.sourceName+"."+(index)));
 	    else if(!"constant".equalsIgnoreCase(segment))
-		return writeToBinary(this.output,this.pushProc.replace(":segment", segment).replace(":index", ""+index));
+		return writeToBinary(this.output,this.pushProc.replace(":segment", segment).replace(":index", this.sourceName+"."+index));
 	    else
 		return writeToBinary(this.output,this.constPushProc.replace(":val", ""+index));
 	}
@@ -380,6 +378,8 @@ public class CodeWriter {
 		return writeToBinary(this.output,this.directPopProc.replace(":segment",""+(5+index)));
 	    else if("pointer".equalsIgnoreCase(segment))
 		return writeToBinary(this.output,this.directPopProc.replace(":segment",""+(3+index)));
+	    else if("static".equalsIgnoreCase(segment))
+			return writeToBinary(this.output,this.directPopProc.replace(":segment",""+(index)));
 	    else
 		return writeToBinary(this.output,this.popProc.replace(":segment", segment).replace(":index", ""+index));
 	}
@@ -389,7 +389,7 @@ public class CodeWriter {
 	return writeToBinary(this.output,this.initProc);
     }
     public boolean writeLable(String label){
-	return writeToBinary(this.output,this.labelProc.replace(":label",label));
+	return writeToBinary(this.output,this.lableProc.replace(":lable",label));
     }
     public boolean writeGoto(String label){
 	return writeToBinary(this.output,this.gotoProc.replace(":label",label));
@@ -399,13 +399,16 @@ public class CodeWriter {
     }
     public boolean writeCall(String func,int noargs){
 	this.logic_id++;
-	return writeToBinary(this.output,this.funCallProc.replaceAll(":fun",func).replaceAll(":id",this.logic_id).replaceAll(":args",noargs);
+	return writeToBinary(this.output,this.funCallProc.replaceAll(":fun",func).replaceAll(":id",""+this.logic_id).replaceAll(":args",""+noargs));
     }
     public boolean writeReturn(){
 	    return writeToBinary(this.output,this.funRetProc);
     }
     public boolean writeFunction(String func,int nolocal){
-	return writeToBinary(this.output,this.funDecProc.replaceAll(":fun",func).replaceAll(":args",nolocal));
+	return writeToBinary(this.output,this.funDecProc.replaceAll(":fun",func).replaceAll(":args",""+nolocal));
+    }
+    public boolean writeComment(String comment){
+    	return writeToBinary(this.output,comment);
     }
     public boolean writeToBinary(FileWriter binary,String str){
 	try {
@@ -417,3 +420,5 @@ public class CodeWriter {
 		
     }
 }
+
+
